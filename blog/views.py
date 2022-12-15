@@ -10,7 +10,7 @@ def post_list(req):
 
 
 def post_detail(req, id):
-    post = Post.published.get_object_or_404(id=id)
+    post = get_object_or_404(Post, id=id, status=Post.Status.PUBLISHED)
 
     data = {'post' : post}
     return render(req, 'blog/post/detail.html', data)
