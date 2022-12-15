@@ -9,8 +9,13 @@ def post_list(req):
     return render(req, 'blog/post/list.html', data)
 
 
-def post_detail(req, id):
-    post = get_object_or_404(Post, id=id, status=Post.Status.PUBLISHED)
+def post_detail(req, year, month, day, post):
+    post = get_object_or_404(Post,
+        status=Post.Status.PUBLISHED,
+        slug=post,
+        publish__year=year,
+        publish__month = month,
+        publish__day=day)
 
     data = {'post' : post}
     return render(req, 'blog/post/detail.html', data)
