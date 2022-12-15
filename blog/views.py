@@ -4,7 +4,8 @@ from .models import Post
 # post views
 def post_list(req):
     posts = Post.published.all()
-    data = {posts : posts}
+    print(posts)
+    data = {'posts' : posts}
     return render(req, 'blog/post/list.html', data)
 
 
