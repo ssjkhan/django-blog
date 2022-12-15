@@ -1,2 +1,5 @@
 # Ignore venv
 venv/
+
+# local databsae
+db.sqlite3
