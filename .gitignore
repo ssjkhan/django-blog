@@ -3,3 +3,6 @@ venv/
 
 # local databsae
 db.sqlite3
+
+# env file
+.env
