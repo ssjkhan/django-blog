@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404
-from .models import Post
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.generic import ListView
+from .models import Post
+from django import forms
 
 # post views
 def post_list(req):
@@ -31,3 +33,15 @@ def post_detail(req, year, month, day, post):
 
     data = {'post' : post}
     return render(req, 'blog/post/detail.html', data)
+
+class PostListView(ListView):
+    queryset = Post.published.all()
+    context_object_name = 'posts'
+    paginate_by = 3
+    template_name = 'blog/post/list.html'
+
+class EmailPostForm (forms.Form):
+    name = forms.CharField(max_length=25)
+    email = forms.EmailField()
+    to = forms.EmailInput()
+    comments = forms.CharField(required=False, widget=forms.Textarea)
