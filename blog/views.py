@@ -1,8 +1,10 @@
+from project import settings
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
+from django.core.mail import send_mail
 from .models import Post
-
+from .forms import EmailPostForm
 # post views
 def post_list(req):
     posts = Post.published.all()
@@ -38,3 +40,32 @@ class PostListView(ListView):
     context_object_name = 'posts'
     paginate_by = 3
     template_name = 'blog/post/list.html'
+
+def post_share(req, post_id):
+    post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
+    sent = False
+
+    if req.method == 'POST':
+        form = EmailPostForm(req.POST)
+        if form.is_valid():
+            cd = form.cleaned_data
+            post_url = req.build_absolute_uri(post.get_absolute_url())
+            subject = f"{cd['name']} recommends you read"\
+                        f"{post.title}"
+            message = f"Read {post.title} at {post_url} \n\n"\
+                f"{cd['name']}\'s comments: {cd['comments']}"
+
+            print(settings.EMAIL_HOST_PASSWORD, settings.EMAIL_HOST_USER)
+            send_mail(subject, message, from_email=settings.EMAIL_HOST_USER, recipient_list=[cd['to']], auth_password=settings.EMAIL_HOST_PASSWORD)
+            sent=True
+
+    else:
+        form = EmailPostForm()
+    
+    data = {
+        'post' : post,
+        'form' : form,
+        'sent' : sent
+    }
+
+    return render(req, 'blog/post/share.html', data)
