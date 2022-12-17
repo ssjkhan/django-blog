@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     "blog.apps.BlogConfig",
     "taggit",
     "django.contrib.sites",
-    "django.contrib.sitemaps"
+    "django.contrib.sitemaps",
+    "django.contrib.postgres"
 ]
 
 MIDDLEWARE = [
@@ -85,7 +86,11 @@ WSGI_APPLICATION = 'project.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'django_blog',
+        'NAME': 'blog',
+        'USER' : 'blogger',
+        'PASSWORD' : 'password',
+        'HOST' : 'localhost',
+
     }
 }
 
