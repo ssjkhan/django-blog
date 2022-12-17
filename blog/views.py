@@ -6,9 +6,18 @@ from django.core.mail import send_mail
 from .models import Post, Comment
 from .forms import EmailPostForm, CommentForm
 from django.views.decorators.http import require_POST
+from taggit.models import Tag
+from django.db.models import Count
+
+
 # post views
-def post_list(req):
+def post_list(req, tag_slug=None):
     posts = Post.published.all()
+    tag = None
+
+    if tag_slug: 
+        tag = get_object_or_404(Tag, slug=tag_slug)
+        posts = posts.filter(tags__in=[tag])
     # Pagination
     paginator = Paginator(posts, 3)
     page_number = req.GET.get('page', 1)
@@ -21,7 +30,10 @@ def post_list(req):
         posts = paginator.page(paginator.num_pages)
 
     # construction of final data object passed to page
-    data = {'posts' : posts}
+    data = {
+        'posts' : posts,
+        'tag' : tag
+        }
     return render(req, 'blog/post/list.html', data)
 
 
@@ -36,10 +48,16 @@ def post_detail(req, year, month, day, post):
     comments = post.comments.filter(active=True)
     form = CommentForm()
 
+    post_tags_ids = post.tags.values_list('id', flat=True)
+    similar_posts = Post.published.filter(tags__in=post_tags_ids).exclude(id=post.id)
+    similar_posts = similar_posts.annotate(same_tags=Count('tags')).order_by('-same_tags', '-publish')[:4]
+
+
     data = {
         'post' : post,
         'comments' : comments,
-        'form' : form
+        'form' : form,
+        'similar_posts' : similar_posts
         }
     return render(req, 'blog/post/detail.html', data)
 
