@@ -17,7 +17,6 @@ import environ
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Initialise environment variables
-print(BASE_DIR)
 env = environ.Env()
 environ.Env.read_env(BASE_DIR / ".env")
 
@@ -34,6 +33,7 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
+SITE_ID = 1
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     "blog.apps.BlogConfig",
-    "taggit"
+    "taggit",
+    "django.contrib.sites",
+    "django.contrib.sitemaps"
 ]
 
 MIDDLEWARE = [
